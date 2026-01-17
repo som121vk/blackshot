@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment | Blackshot Toy Store</title>
+    <link rel="stylesheet" href="css/style.css">`r`n
+    <link rel="stylesheet" href="css/enhancements.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="container nav-wrapper">
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-rocket"></i> BLACKSHOT
+                </a>
+            </div>
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="cart.html">Cart</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Payment Content -->
+    <section class="container payment-container">
+        <h2 style="margin-bottom: 30px;">Payment</h2>
+
+        <!-- Order Review -->
+        <div class="admin-card" style="margin-bottom: 30px;">
+            <h3 style="margin-bottom: 15px;">Order Review</h3>
+            <div id="order-review"></div>
+            <div class="summary-row total" style="margin-top: 15px;">
+                <span>Total Amount</span>
+                <span id="final-total">₹0</span>
+            </div>
+        </div>
+
+        <!-- Payment Method Selection -->
+        <h3 style="margin-bottom: 15px;">Select Payment Method</h3>
+        <div class="payment-methods">
+            <div class="payment-method active" data-method="upi" onclick="selectPaymentMethod('upi')">
+                <i class="fab fa-google-pay"></i>
+                <div>UPI Payment</div>
+            </div>
+            <div class="payment-method" data-method="cod" onclick="selectPaymentMethod('cod')">
+                <i class="fas fa-money-bill-wave"></i>
+                <div>Cash on Delivery</div>
+            </div>
+        </div>
+
+        <!-- UPI Payment Section -->
+        <div class="payment-form" id="upi-form">
+            <h3 style="margin-bottom: 20px;"><i class="fab fa-google-pay"></i> UPI Payment</h3>
+
+            <div id="upi-qr-section" style="text-align: center; margin-bottom: 30px;">
+                <!-- QR Code will be displayed here -->
+            </div>
+
+            <form id="upi-payment-form">
+                <div class="form-group">
+                    <label>UPI Transaction ID / UTR / Reference Number</label>
+                    <input type="text" id="utr-number" required placeholder="Enter 12-digit UTR number">
+                    <small style="color: var(--text-muted);">
+                        After scanning the QR code and completing payment, enter the transaction reference number here.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label>Payment Screenshot (Optional)</label>
+                    <input type="file" id="payment-screenshot" accept="image/*">
+                    <small style="color: var(--text-muted);">
+                        Upload a screenshot of your payment for faster verification.
+                    </small>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; margin-top: 20px;">
+                    <i class="fas fa-check"></i> Submit for Verification
+                </button>
+            </form>
+
+            <div
+                style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #ffc107;">
+                <strong><i class="fas fa-info-circle"></i> Important:</strong>
+                <p style="margin: 5px 0 0 0; font-size: 0.9rem;">
+                    Your order will be placed after admin verification of your payment. You will receive a confirmation
+                    once approved.
+                </p>
+            </div>
+        </div>
+
+        <!-- COD Payment Section -->
+        <div class="payment-form" id="cod-form" style="display: none;">
+            <h3 style="margin-bottom: 20px;"><i class="fas fa-money-bill-wave"></i> Cash on Delivery</h3>
+
+            <div
+                style="background: #e8f5e9; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #4caf50;">
+                <h4 style="margin-bottom: 10px; color: #2e7d32;">How COD Works:</h4>
+                <ul style="margin: 10px 0; padding-left: 20px; color: var(--text-dark);">
+                    <li style="margin-bottom: 8px;">You pay in cash when the order is delivered to your doorstep</li>
+                    <li style="margin-bottom: 8px;">Our delivery partner will hand over your order after receiving
+                        payment</li>
+                    <li style="margin-bottom: 8px;">Please keep the exact amount ready for smooth delivery</li>
+                </ul>
+            </div>
+
+            <div
+                style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                <strong><i class="fas fa-info-circle"></i> Note:</strong>
+                <p style="margin: 5px 0 0 0; font-size: 0.9rem;">
+                    COD orders require admin confirmation before processing. You will be notified once your order is
+                    confirmed.
+                </p>
+            </div>
+
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="cod-terms" required style="width: auto;">
+                    <span>I understand and agree to pay cash on delivery</span>
+                </label>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; padding: 15px;" onclick="processCOD()">
+                <i class="fas fa-check"></i> Confirm COD Order
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h3>BLACKSHOT</h3>
+                <p>Premium toy store for the modern family.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/store.js"></script>
+    <script src="js/enhancements.js"></script>
+    <script>
+        let selectedMethod = 'upi';
+        let currentOrder = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get order ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('orderId');
+
+            if (!orderId) {
+                alert('No order ID found. Please start from checkout.');
+                window.location.href = 'cart.html';
+                return;
+            }
+
+            // Validate order
+            const validation = Store.validateOrderForPayment(orderId);
+            if (!validation.valid) {
+                alert(validation.message + '. Please start from checkout.');
+                window.location.href = 'cart.html';
+                return;
+            }
+
+            currentOrder = validation.order;
+            renderOrderReview();
+            displayUpiQrCode();
+        });
+
+        function renderOrderReview() {
+            const orderReview = document.getElementById('order-review');
+
+            // Display Order ID prominently
+            orderReview.innerHTML = `
+                <div style="background: linear-gradient(135deg, #e63946 0%, #ff6b6b 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
+                    <p style="font-size: 0.9rem; margin-bottom: 5px; opacity: 0.9;">Your Order ID</p>
+                    <h2 style="font-size: 1.8rem; font-weight: 800; letter-spacing: 1px; margin: 0;">${currentOrder.orderId}</h2>
+                    <p style="font-size: 0.85rem; margin-top: 10px; opacity: 0.9;">
+                        <i class="fas fa-info-circle"></i> Use this Order ID as payment reference
+                    </p>
+                </div>
+                ${currentOrder.items.map(item => `
+                    <div class="order-item">
+                        <span class="order-item-name">${item.name}</span>
+                        <span class="order-item-qty">x${item.quantity}</span>
+                        <span>${Store.formatPrice(item.price * item.quantity)}</span>
+                    </div>
+                `).join('')}
+            `;
+
+            document.getElementById('final-total').textContent = Store.formatPrice(currentOrder.total);
+        }
+
+        function selectPaymentMethod(method) {
+            selectedMethod = method;
+
+            // Update active state
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelector(`[data-method="${method}"]`).classList.add('active');
+
+            // Show corresponding form
+            document.getElementById('upi-form').style.display = 'none';
+            document.getElementById('cod-form').style.display = 'none';
+            document.getElementById(`${method}-form`).style.display = 'block';
+        }
+
+        function displayUpiQrCode() {
+            // Static Configuration for GitHub Pages
+            const upiConfig = {
+                upiId: '7985804343@fam', // Replace with your actual UPI ID if different
+                qrCodePath: 'images/upi-qr.jpg' // Path relative to root
+            };
+
+            const qrSection = document.getElementById('upi-qr-section');
+
+            qrSection.innerHTML = `
+                <div style="background: white; padding: 25px; border-radius: 12px; display: inline-block; box-shadow: 0 8px 24px rgba(0,0,0,0.15); max-width: 100%;">
+                    <p style="margin-bottom: 15px; font-weight: 700; color: var(--text-dark); font-size: 1.1rem;">
+                        <i class="fas fa-qrcode"></i> Scan QR Code to Pay
+                    </p>
+                    
+                    <div style="position: relative; min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                        <img src="${upiConfig.qrCodePath}" 
+                             alt="UPI QR Code" 
+                             style="max-width: 250px; width: 100%; border: 3px solid #e63946; border-radius: 12px; box-shadow: 0 4px 12px rgba(230, 57, 70, 0.2);"
+                             onerror="this.onerror=null; this.parentElement.innerHTML='<div style=\'padding: 20px; text-align: center; color: #dc3545;\'><i class=\'fas fa-exclamation-circle\' style=\'font-size: 2rem; margin-bottom: 10px;\'></i><br>QR not loading?<br>Please ensure payment is made to: <strong>${upiConfig.upiId}</strong></div>'">
+                    </div>
+
+                    <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px;">
+                            UPI ID: <strong style="color: var(--text-dark); word-break: break-all;">${upiConfig.upiId}</strong>
+                        </p>
+                        <p style="font-size: 1.3rem; font-weight: 800; color: var(--primary-red); margin: 0;">
+                            Amount: ${Store.formatPrice(currentOrder.total)}
+                        </p>
+                    </div>
+                    <div style="margin-top: 15px; padding: 12px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+                        <p style="font-size: 0.85rem; margin: 0; color: #856404;">
+                            <i class="fas fa-exclamation-circle"></i> <strong>Important:</strong> Include Order ID <strong>${currentOrder.orderId}</strong> in payment remarks
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        document.getElementById('upi-payment-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+            const utrNumber = document.getElementById('utr-number').value;
+            const screenshotInput = document.getElementById('payment-screenshot');
+
+            let screenshot = null;
+            if (screenshotInput.files && screenshotInput.files[0]) {
+                screenshot = await toBase64(screenshotInput.files[0]);
+            }
+
+            // Submit order with payment proof
+            const result = Store.submitOrderWithPayment(currentOrder.orderId, {
+                utrNumber: utrNumber,
+                screenshot: screenshot,
+                paymentMethod: 'UPI'
+            });
+
+            if (result.success) {
+                // Store order ID for success page
+                localStorage.setItem('last_order_id', result.order.orderId);
+                localStorage.setItem('payment_method', 'UPI (Pending Verification)');
+
+                if (window.ToastManager) {
+                    ToastManager.show('Order submitted successfully!', 'success');
+                }
+
+                setTimeout(() => {
+                    window.location.href = 'success.html';
+                }, 1000);
+            } else {
+                alert(result.message || 'Failed to submit order');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Submit for Verification';
+            }
+        });
+
+        function processCOD() {
+            const checkbox = document.getElementById('cod-terms');
+            if (!checkbox.checked) {
+                alert('Please accept the terms to proceed');
+                return;
+            }
+
+            const btn = event.target;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            // Submit order with COD
+            const result = Store.submitOrderWithPayment(currentOrder.orderId, {
+                utrNumber: 'COD',
+                screenshot: null,
+                paymentMethod: 'Cash on Delivery'
+            });
+
+            if (result.success) {
+                localStorage.setItem('last_order_id', result.order.orderId);
+                localStorage.setItem('payment_method', 'Cash on Delivery (Pending Confirmation)');
+
+                if (window.ToastManager) {
+                    ToastManager.show('COD order submitted successfully!', 'success');
+                }
+
+                setTimeout(() => {
+                    window.location.href = 'success.html';
+                }, 1000);
+            } else {
+                alert(result.message || 'Failed to submit order');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Confirm COD Order';
+            }
+        }
+
+        // Helper: File to Base64
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    </script>
+</body>
+
+</html>
